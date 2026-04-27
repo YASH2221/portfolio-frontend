@@ -1,4 +1,4 @@
-const API_BASE = 'https://3.26.1.70:8000/api';
+const API_BASE = 'https://yash-api.duckdns.org/api';
 
 async function fetchAPI(endpoint, options = {}) {
   try {
