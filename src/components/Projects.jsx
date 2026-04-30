@@ -13,14 +13,82 @@ const CATEGORIES = [
   { key: 'mobile', label: 'Mobile' },
 ];
 
+function ProjectsSkeleton() {
+  return (
+    <>
+      {/* Filter chips skeleton */}
+      <div className="projects__filters">
+        {[1, 2, 3, 4, 5].map(i => (
+          <div
+            key={i}
+            className="skeleton skeleton--rounded"
+            style={{ width: 80 + Math.random() * 40, height: 38 }}
+          />
+        ))}
+      </div>
+
+      {/* Cards skeleton */}
+      <div className="projects__grid">
+        {[1, 2, 3, 4, 5, 6].map(i => (
+          <div
+            key={i}
+            className="skeleton skeleton--card"
+            style={{
+              padding: 'var(--space-xl)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--space-md)',
+              animationDelay: `${i * 0.15}s`,
+            }}
+          >
+            {/* Icon + badge */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="skeleton skeleton--circle" style={{ width: 44, height: 44 }} />
+              <div className="skeleton skeleton--rounded" style={{ width: 60, height: 22 }} />
+            </div>
+
+            {/* Title */}
+            <div className="skeleton skeleton-text--lg" />
+
+            {/* Description */}
+            <div>
+              <div className="skeleton skeleton-text" />
+              <div className="skeleton skeleton-text" style={{ width: '85%' }} />
+            </div>
+
+            {/* Tags */}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {[1, 2, 3].map(j => (
+                <div key={j} className="skeleton skeleton--rounded" style={{ width: 60 + Math.random() * 30, height: 26 }} />
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="skeleton skeleton-text--sm" style={{ marginTop: 'auto' }} />
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [filter, setFilter] = useState('');
   const [selected, setSelected] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [ref, inView] = useInView({ threshold: 0.1, triggerOnce: true });
 
   useEffect(() => {
-    api.getProjects().then(setProjects).catch(console.error);
+    api.getProjects()
+      .then(data => {
+        setProjects(data);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setIsLoading(false);
+      });
   }, []);
 
   const filtered = filter
@@ -39,63 +107,69 @@ export default function Projects() {
           </p>
         </div>
 
-        {/* Filter chips */}
-        <div className="projects__filters">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.key}
-              className={`projects__filter ${filter === cat.key ? 'projects__filter--active' : ''}`}
-              onClick={() => setFilter(cat.key)}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
+        {isLoading ? (
+          <ProjectsSkeleton />
+        ) : (
+          <>
+            {/* Filter chips */}
+            <div className="projects__filters">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.key}
+                  className={`projects__filter ${filter === cat.key ? 'projects__filter--active' : ''}`}
+                  onClick={() => setFilter(cat.key)}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
 
-        {/* Project grid */}
-        <motion.div className="projects__grid" layout>
-          <AnimatePresence mode="popLayout">
-            {filtered.map((project, i) => (
-              <motion.div
-                key={project.id}
-                className="projects__card glass-card"
-                layout
-                initial={{ opacity: 0, y: 30 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                onClick={() => setSelected(project)}
-              >
-                <div className="projects__card-header">
-                  <div className="projects__card-icon">
-                    <Layers size={24} />
-                  </div>
-                  {project.featured && (
-                    <span className="projects__featured-badge">Featured</span>
-                  )}
-                </div>
-                
-                <h3 className="projects__card-title">{project.title}</h3>
-                <p className="projects__card-desc">{project.short_description}</p>
-                
-                <div className="projects__card-tags">
-                  {project.tech_stack?.slice(0, 4).map(tech => (
-                    <span key={tech} className="tech-tag">{tech}</span>
-                  ))}
-                  {project.tech_stack?.length > 4 && (
-                    <span className="tech-tag">+{project.tech_stack.length - 4}</span>
-                  )}
-                </div>
+            {/* Project grid */}
+            <motion.div className="projects__grid" layout>
+              <AnimatePresence mode="popLayout">
+                {filtered.map((project, i) => (
+                  <motion.div
+                    key={project.id}
+                    className="projects__card glass-card"
+                    layout
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={inView ? { opacity: 1, y: 0 } : {}}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                    onClick={() => setSelected(project)}
+                  >
+                    <div className="projects__card-header">
+                      <div className="projects__card-icon">
+                        <Layers size={24} />
+                      </div>
+                      {project.featured && (
+                        <span className="projects__featured-badge">Featured</span>
+                      )}
+                    </div>
 
-                <div className="projects__card-footer">
-                  <span className="projects__card-more">
-                    View Details <ChevronRight size={14} />
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+                    <h3 className="projects__card-title">{project.title}</h3>
+                    <p className="projects__card-desc">{project.short_description}</p>
+
+                    <div className="projects__card-tags">
+                      {project.tech_stack?.slice(0, 4).map(tech => (
+                        <span key={tech} className="tech-tag">{tech}</span>
+                      ))}
+                      {project.tech_stack?.length > 4 && (
+                        <span className="tech-tag">+{project.tech_stack.length - 4}</span>
+                      )}
+                    </div>
+
+                    <div className="projects__card-footer">
+                      <span className="projects__card-more">
+                        View Details <ChevronRight size={14} />
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          </>
+        )}
       </div>
 
       {/* Project Detail Modal */}

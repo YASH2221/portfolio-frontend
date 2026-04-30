@@ -11,10 +11,69 @@ const TITLES = [
   'Problem Solver',
 ];
 
+function HeroSkeleton() {
+  return (
+    <section className="hero" id="home">
+      <div className="hero__content container">
+        <div className="hero__text">
+          {/* Badge skeleton */}
+          <div className="skeleton skeleton--rounded" style={{ width: 200, height: 32, marginBottom: 'var(--space-xl)' }} />
+
+          {/* Name skeleton */}
+          <div className="skeleton skeleton-text--hero" style={{ marginBottom: 'var(--space-md)' }} />
+          <div className="skeleton" style={{ width: '50%', height: 'clamp(1.5rem, 3vw, 2.5rem)', marginBottom: 'var(--space-md)' }} />
+
+          {/* Title skeleton */}
+          <div className="skeleton" style={{ width: 280, height: 24, marginBottom: 'var(--space-lg)' }} />
+
+          {/* Bio skeleton */}
+          <div style={{ maxWidth: 560, marginBottom: 'var(--space-md)' }}>
+            <div className="skeleton skeleton-text" />
+            <div className="skeleton skeleton-text" style={{ width: '95%' }} />
+            <div className="skeleton skeleton-text" style={{ width: '70%' }} />
+          </div>
+
+          {/* Location skeleton */}
+          <div className="skeleton skeleton--rounded" style={{ width: 220, height: 18, marginBottom: 'var(--space-2xl)' }} />
+
+          {/* Buttons skeleton */}
+          <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
+            <div className="skeleton" style={{ width: 140, height: 48, borderRadius: 'var(--border-radius-md)' }} />
+            <div className="skeleton" style={{ width: 180, height: 48, borderRadius: 'var(--border-radius-md)' }} />
+          </div>
+        </div>
+
+        {/* Avatar skeleton */}
+        <div className="hero__visual">
+          <div className="skeleton skeleton--circle" style={{ width: 320, height: 320 }} />
+        </div>
+      </div>
+
+      {/* Stats skeleton */}
+      <div className="hero__stats container">
+        {[1, 2, 3].map(i => (
+          <div key={i} style={{ textAlign: 'center' }}>
+            <div className="skeleton" style={{ width: 60, height: 36, marginBottom: 8, marginInline: 'auto' }} />
+            <div className="skeleton skeleton-text--sm" style={{ width: 100, marginInline: 'auto' }} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Hero({ profile }) {
   const [titleIndex, setTitleIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading state based on profile prop
+    if (profile) {
+      setIsLoading(false);
+    }
+  }, [profile]);
 
   useEffect(() => {
     const currentTitle = TITLES[titleIndex];
@@ -37,6 +96,8 @@ export default function Hero({ profile }) {
 
     return () => clearTimeout(timeout);
   }, [displayText, isDeleting, titleIndex]);
+
+  if (isLoading) return <HeroSkeleton />;
 
   const stats = [
     { value: '4+', label: 'Years Experience' },
@@ -105,7 +166,7 @@ export default function Hero({ profile }) {
               </div>
             </div>
           </div>
-          
+
           {/* Floating tech badges */}
           <div className="hero__floating-badge hero__floating-badge--1">⚛️ React</div>
           <div className="hero__floating-badge hero__floating-badge--2">🐍 Python</div>
