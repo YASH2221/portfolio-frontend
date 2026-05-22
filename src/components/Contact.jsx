@@ -34,7 +34,7 @@ export default function Contact() {
 
   const socials = [
     { icon: ExternalLink, href: 'https://linkedin.com/in/yash-patidar-288412230', label: 'LinkedIn' },
-    { icon: GitBranch, href: 'https://github.com/yashpatidar', label: 'GitHub' },
+    { icon: GitBranch, href: 'https://github.com/YASH2221', label: 'GitHub' },
   ];
 
   return (
